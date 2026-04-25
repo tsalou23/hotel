@@ -1,0 +1,158 @@
+========================================
+CHATGPT PROMPT FOR HOTEL DASHBOARD DESIGN
+========================================
+
+Copy this entire prompt and paste it into ChatGPT:
+
+---
+
+I need a complete React component for a hotel concierge dashboard. Give me ONLY the full code, ready to copy-paste into a file called `HotelDashboard2.jsx`.
+
+**REQUIREMENTS:**
+
+**1. IMPORTS (Must include exactly these):**
+```javascript
+import { useState } from 'react'
+import { supabase } from '../../supabaseClient'
+import { useNavigate } from 'react-router-dom'
+```
+
+**2. COMPONENT STRUCTURE:**
+- Export default function named `HotelDashboard`
+- Use `const navigate = useNavigate()`
+- Include `handleLogout` function that calls `await supabase.auth.signOut()` then `navigate('/login')`
+
+**3. DATA (Use exactly this data):**
+```javascript
+const restaurants = [
+    { id: 1, name: 'Taverna Plaka', cuisine: 'Greek', price: '€€€', rating: 4.8, location: 'Plaka', phone: '+30 210 1234567' },
+    { id: 2, name: 'Plaka Grill', cuisine: 'Greek', price: '€€', rating: 4.5, location: 'Monastiraki', phone: '+30 210 2345678' },
+    { id: 3, name: 'Italian Corner', cuisine: 'Italian', price: '€€€', rating: 4.7, location: 'Kolonaki', phone: '+30 210 3456789' },
+    { id: 4, name: 'Seafood Paradise', cuisine: 'Seafood', price: '€€€€', rating: 4.9, location: 'Piraeus', phone: '+30 210 4567890' },
+    { id: 5, name: 'Acropolis View', cuisine: 'Greek', price: '€€€', rating: 4.6, location: 'Plaka', phone: '+30 210 5678901' },
+]
+
+const bookings = [
+    { id: 1, restaurant: 'Taverna Plaka', guest: 'Smith Family', date: '2024-06-15', time: '19:30', pax: 4, status: 'pending', phone: '+1 555 0101' },
+    { id: 2, restaurant: 'Plaka Grill', guest: 'John Doe', date: '2024-06-20', time: '20:00', pax: 2, status: 'confirmed', phone: '+44 20 1234' },
+    { id: 3, restaurant: 'Italian Corner', guest: 'Anderson Group', date: '2024-06-18', time: '19:00', pax: 6, status: 'completed', phone: '+1 555 0202' },
+    { id: 4, restaurant: 'Seafood Paradise', guest: 'Maria Garcia', date: '2024-06-22', time: '21:00', pax: 3, status: 'confirmed', phone: '+34 91 123' },
+    { id: 5, restaurant: 'Acropolis View', guest: 'Chen Wei', date: '2024-06-16', time: '18:30', pax: 2, status: 'completed', phone: '+86 10 1234' },
+]
+```
+
+**4. FEATURES TO INCLUDE:**
+
+**Navigation:**
+- Sidebar OR top navigation (your choice)
+- 3 main views: "My Bookings", "Browse Restaurants", "Earnings"
+- Logout button that calls `handleLogout`
+- Show monthly earnings in sidebar/header (completed bookings × €3)
+
+**My Bookings View:**
+- Show all bookings in a table or cards
+- Display: restaurant, guest name, date, time, number of guests, phone, status
+- Status badges with colors:
+  - pending: yellow (#fef3c7 bg, #92400e text)
+  - confirmed: blue (#dbeafe bg, #1e40af text)
+  - completed: green (#d1fae5 bg, #065f46 text)
+- Show commission earned (€3 for completed, €0 for others)
+- Filter buttons: All, Pending, Confirmed, Completed
+
+**Browse Restaurants View:**
+- Show all restaurants (table or cards - your choice)
+- Display: name, cuisine, location, price range, rating, phone, commission (€3)
+- Search input that filters by name or location
+- Dropdown filters for cuisine and price
+- "Book Now" button for each restaurant
+
+**Earnings View:**
+- 3 stat cards showing:
+  - Total Earnings (completed × €3)
+  - Pending Earnings (confirmed × €3)
+  - Commission Rate (€3.00)
+- Table showing earnings breakdown by restaurant:
+  - Restaurant name
+  - Number of completed bookings
+  - Number of confirmed bookings
+  - Total earned (completed × €3)
+  - Pending amount (confirmed × €3)
+
+**5. DESIGN STYLE:**
+Choose ONE of these styles (surprise me with your best choice):
+
+**Option A - Modern Minimal:**
+- Light background (#f8fafc)
+- White cards with subtle shadows
+- Professional blue accent (#2563eb)
+- Clean typography, lots of white space
+- Rounded corners (8-12px)
+
+**Option B - Dark Professional:**
+- Dark background (#0f172a)
+- Dark cards (#1e293b)
+- Bright accent color (blue/purple/teal)
+- High contrast text
+- Modern, sleek look
+
+**Option C - Colorful Dashboard:**
+- Gradient backgrounds
+- Colorful stat cards
+- Bold typography
+- Vibrant accent colors
+- Modern, energetic feel
+
+**Option D - Corporate Clean:**
+- Gray/white color scheme
+- Sharp corners or subtle rounds
+- Traditional table layouts
+- Professional, business-like
+- Stripe/Linear style
+
+**6. TECHNICAL REQUIREMENTS:**
+- Use inline styles (styles object at bottom)
+- Fixed layout: `position: 'fixed'`, `height: '100vh'`, `overflow: 'hidden'`
+- No layout shifts when switching views
+- Responsive grid layouts where appropriate
+- Hover effects on interactive elements
+- All styles in a `styles` object at the bottom
+
+**7. ADDITIONAL FEATURES (Optional but impressive):**
+- Hover effects on table rows
+- Animated transitions
+- Icons/emojis for visual interest
+- Gradient backgrounds
+- Box shadows for depth
+- Better typography hierarchy
+- Loading states placeholders
+- Empty state messages
+
+**OUTPUT FORMAT:**
+Give me ONLY the complete, working code. No explanations, no markdown, just the full component code that I can copy and paste directly into `HotelDashboard2.jsx`.
+
+Start with the imports and end with the styles object. Make it production-ready and beautiful!
+
+---
+
+========================================
+HOW TO USE THIS PROMPT:
+========================================
+
+1. Copy everything between the "---" lines above
+2. Paste into ChatGPT
+3. Copy the code it generates
+4. Paste into: /Users/giorgostsaloukidis/Desktop/hotel/frontend/src/pages/hotel/HotelDashboard2.jsx
+5. In App.jsx, change the import to:
+   import HotelDashboard from './pages/hotel/HotelDashboard2'
+6. Save and view your new design!
+
+========================================
+TIPS:
+========================================
+
+- Ask ChatGPT to try different design styles: "Make it darker", "Use cards instead of tables", "Add more colors"
+- Request specific features: "Add a search bar at the top", "Make the sidebar wider"
+- Mix styles: "Combine Option A and Option D"
+- Ask for variations: "Give me 3 different versions"
+
+========================================

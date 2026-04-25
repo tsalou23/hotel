@@ -1,0 +1,1519 @@
+============================================================
+ATHENS CONCIERGE — FILE STRUCTURE & FULL SOURCE CODE
+============================================================
+
+FILE STRUCTURE
+----------------------------------------
+├── README.md
+├── components.json
+├── eslint.config.js
+├── index.html
+├── package.json
+├── playwright-fixture.ts
+├── playwright.config.ts
+├── postcss.config.js
+├── tailwind.config.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vitest.config.ts
+  ├── App.css
+  ├── App.tsx
+  ├── index.css
+  ├── main.tsx
+  ├── tailwind.config.lov.json
+  ├── vite-env.d.ts
+    ├── NavLink.tsx
+      ├── BookingsView.tsx
+      ├── EarningsView.tsx
+      ├── RestaurantsView.tsx
+      ├── DashboardLayout.tsx
+      ├── Header.tsx
+      ├── Sidebar.tsx
+      ├── Badge.tsx
+      ├── Button.tsx
+      ├── Card.tsx
+      ├── Table.tsx
+    ├── use-mobile.tsx
+    ├── use-toast.ts
+    ├── useDashboard.ts
+    ├── useHotelData.ts
+    ├── utils.ts
+    ├── Index.tsx
+    ├── NotFound.tsx
+      ├── HotelDashboard.tsx
+    ├── example.test.ts
+    ├── setup.ts
+
+============================================================
+FILE CONTENTS
+============================================================
+
+============================================================
+FILE: README.md
+============================================================
+# Welcome to your Lovable project
+
+TODO: Document your project here
+
+
+============================================================
+FILE: components.json
+============================================================
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+
+
+============================================================
+FILE: eslint.config.js
+============================================================
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  { ignores: ["dist"] },
+  {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+);
+
+
+============================================================
+FILE: index.html
+============================================================
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TODO: Set the document title to the name of your application -->
+    <title>Lovable App</title>
+    <meta name="description" content="Lovable Generated Project" />
+    <meta name="author" content="Lovable" />
+
+    <!-- TODO: Update og:title to match your application name -->
+    <meta property="og:title" content="Lovable App" />
+    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+============================================================
+FILE: package.json
+============================================================
+{
+  "name": "vite_react_shadcn_ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-aspect-ratio": "^1.1.7",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-checkbox": "^1.3.2",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-context-menu": "^2.2.15",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-hover-card": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-menubar": "^1.1.15",
+    "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-radio-group": "^1.3.7",
+    "@radix-ui/react-scroll-area": "^1.2.9",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slider": "^1.3.5",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
+    "@radix-ui/react-toast": "^1.2.14",
+    "@radix-ui/react-toggle": "^1.1.9",
+    "@radix-ui/react-toggle-group": "^1.1.10",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@tanstack/react-query": "^5.83.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^3.6.0",
+    "embla-carousel-react": "^8.6.0",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.462.0",
+    "next-themes": "^0.3.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.61.1",
+    "react-resizable-panels": "^2.1.9",
+    "react-router-dom": "^6.30.1",
+    "recharts": "^2.15.4",
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.9",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@playwright/test": "^1.57.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^22.16.5",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react-swc": "^3.11.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.15.0",
+    "jsdom": "^20.0.3",
+    "lovable-tagger": "^1.1.13",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0",
+    "vite": "^5.4.19",
+    "vitest": "^3.2.4"
+  }
+}
+
+
+============================================================
+FILE: playwright-fixture.ts
+============================================================
+// Re-export the base fixture from the package
+// Override or extend test/expect here if needed
+export { test, expect } from "lovable-agent-playwright-config/fixture";
+
+
+============================================================
+FILE: playwright.config.ts
+============================================================
+import { createLovableConfig } from "lovable-agent-playwright-config/config";
+
+export default createLovableConfig({
+  // Add your custom playwright configuration overrides here
+  // Example:
+  // timeout: 60000,
+  // use: {
+  //   baseURL: 'http://localhost:3000',
+  // },
+});
+
+
+============================================================
+FILE: postcss.config.js
+============================================================
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+
+============================================================
+FILE: tailwind.config.ts
+============================================================
+import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;
+
+
+============================================================
+FILE: tsconfig.app.json
+============================================================
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strict": false,
+    "target": "ES2020",
+    "types": [
+      "vitest/globals"
+    ],
+    "useDefineForClassFields": true
+  },
+  "include": [
+    "src"
+  ]
+}
+
+
+============================================================
+FILE: tsconfig.json
+============================================================
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strictNullChecks": false
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
+
+
+============================================================
+FILE: tsconfig.node.json
+============================================================
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+
+============================================================
+FILE: vite.config.ts
+============================================================
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import { componentTagger } from "lovable-tagger";
+
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
+  server: {
+    host: "::",
+    port: 8080,
+    hmr: {
+      overlay: false,
+    },
+  },
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+  },
+}));
+
+
+============================================================
+FILE: vitest.config.ts
+============================================================
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+  },
+  resolve: {
+    alias: { "@": path.resolve(__dirname, "./src") },
+  },
+});
+
+
+============================================================
+FILE: src/App.css
+============================================================
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+
+============================================================
+FILE: src/App.tsx
+============================================================
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import Index from "./pages/Index.tsx";
+import NotFound from "./pages/NotFound.tsx";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
+
+
+============================================================
+FILE: src/index.css
+============================================================
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 28% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 31%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 31%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 213 27% 84%;
+    --secondary-foreground: 215 28% 17%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 215 28% 17%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 60%;
+    --radius: 1rem;
+
+    --sidebar-bg: 215 28% 27%;
+    --sidebar-active: 217 91% 60%;
+    --success: 160 84% 39%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+============================================================
+FILE: src/main.tsx
+============================================================
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(<App />);
+
+
+============================================================
+FILE: src/tailwind.config.lov.json
+============================================================
+{
+  "theme": {
+    "container": {
+      "center": true,
+      "padding": "2rem",
+      "screens": {
+        "2xl": "1400px"
+      }
+    },
+    "accentColor": {
+      "inherit": "inherit",
+      "current": "currentColor",
+      "transparent": "transparent",
+      "black": "#000",
+      "white": "#fff",
+      "slate": {
+        "50": "#f8fafc",
+        "100": "#f1f5f9",
+        "200": "#e2e8f0",
+        "300": "#cbd5e1",
+        "400": "#94a3b8",
+        "500": "#64748b",
+        "600": "#475569",
+... [truncated] ...
+
+
+============================================================
+FILE: src/vite-env.d.ts
+============================================================
+/// <reference types="vite/client" />
+
+
+============================================================
+FILE: src/components/NavLink.tsx
+============================================================
+import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
+import { forwardRef } from "react";
+import { cn } from "@/lib/utils";
+
+interface NavLinkCompatProps extends Omit<NavLinkProps, "className"> {
+  className?: string;
+  activeClassName?: string;
+  pendingClassName?: string;
+}
+
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
+  ({ className, activeClassName, pendingClassName, to, ...props }, ref) => {
+    return (
+      <RouterNavLink
+        ref={ref}
+        to={to}
+        className={({ isActive, isPending }) =>
+          cn(className, isActive && activeClassName, isPending && pendingClassName)
+        }
+        {...props}
+      />
+    );
+  },
+);
+
+NavLink.displayName = "NavLink";
+
+export { NavLink };
+
+
+============================================================
+FILE: src/components/hotel/BookingsView.tsx
+============================================================
+import { useState } from "react";
+import Table from "@/components/ui-custom/Table";
+import Badge from "@/components/ui-custom/Badge";
+import Card from "@/components/ui-custom/Card";
+
+interface Booking {
+  id: string;
+  restaurant_name: string;
+  booking_date: string;
+  booking_time: string;
+  number_of_guests: number;
+  status: "pending" | "confirmed" | "completed";
+  commission_earned: number;
+  notes: string;
+}
+
+const tabs = ["all", "pending", "confirmed", "completed"] as const;
+
+export default function BookingsView({ bookings }: { bookings: Booking[] }) {
+  const [filter, setFilter] = useState<string>("all");
+
+  const filtered = filter === "all" ? bookings : bookings.filter((b) => b.status === filter);
+
+  return (
+    <div className="space-y-6">
+      {/* Filter tabs */}
+      <div className="flex gap-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setFilter(tab)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
+              filter === tab
+                ? "bg-gray-900 text-white"
+                : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"
+            }`}
+          >
+            {tab} {tab === "all" ? `(${bookings.length})` : `(${bookings.filter((b) => b.status === tab).length})`}
+          </button>
+        ))}
+      </div>
+
+      {/* Bookings table */}
+      <Card>
+        <Table headers={["Restaurant", "Date", "Time", "Guests", "Status", "Commission"]}>
+          {filtered.map((b) => (
+            <tr key={b.id} className="hover:bg-muted/50 transition-colors">
+              <td className="py-3 px-4 text-sm font-medium text-foreground">{b.restaurant_name}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{b.booking_date}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{b.booking_time}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{b.number_of_guests}</td>
+              <td className="py-3 px-4">
+                <Badge variant={b.status}>{b.status}</Badge>
+              </td>
+              <td className="py-3 px-4 text-sm font-medium text-emerald-500">€{b.commission_earned}</td>
+            </tr>
+          ))}
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/components/hotel/EarningsView.tsx
+============================================================
+import Card from "@/components/ui-custom/Card";
+import Table from "@/components/ui-custom/Table";
+import Badge from "@/components/ui-custom/Badge";
+import { Euro, TrendingUp, CheckCircle } from "lucide-react";
+
+interface Booking {
+  id: string;
+  restaurant_name: string;
+  booking_date: string;
+  booking_time: string;
+  number_of_guests: number;
+  status: "pending" | "confirmed" | "completed";
+  commission_earned: number;
+  notes: string;
+}
+
+interface Stats {
+  totalBookings: number;
+  completed: number;
+  confirmed: number;
+  pending: number;
+  earnings: number;
+}
+
+export default function EarningsView({ stats, bookings }: { stats: Stats; bookings: Booking[] }) {
+  const completedBookings = bookings.filter((b) => b.status === "completed");
+
+  return (
+    <div className="space-y-6">
+      {/* Stat cards */}
+      <div className="grid grid-cols-3 gap-6">
+        <Card className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+            <Euro size={22} className="text-emerald-600" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-foreground">€{stats.earnings}</p>
+            <p className="text-sm text-muted-foreground">Total Earnings</p>
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+            <TrendingUp size={22} className="text-blue-600" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-foreground">€{stats.completed > 0 ? (stats.earnings / stats.completed).toFixed(0) : 0}</p>
+            <p className="text-sm text-muted-foreground">Avg per Booking</p>
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+            <CheckCircle size={22} className="text-purple-600" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
+            <p className="text-sm text-muted-foreground">Completed Bookings</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Completed bookings table */}
+      <Card>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Completed Bookings</h3>
+        <Table headers={["Restaurant", "Date", "Guests", "Status", "Commission"]}>
+          {completedBookings.map((b) => (
+            <tr key={b.id} className="hover:bg-muted/50 transition-colors">
+              <td className="py-3 px-4 text-sm font-medium text-foreground">{b.restaurant_name}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{b.booking_date}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{b.number_of_guests}</td>
+              <td className="py-3 px-4"><Badge variant="completed">{b.status}</Badge></td>
+              <td className="py-3 px-4 text-sm font-medium text-emerald-500">€{b.commission_earned}</td>
+            </tr>
+          ))}
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/components/hotel/RestaurantsView.tsx
+============================================================
+import { useState } from "react";
+import { Search } from "lucide-react";
+import Table from "@/components/ui-custom/Table";
+import Card from "@/components/ui-custom/Card";
+
+interface Restaurant {
+  id: string;
+  restaurant_name: string;
+  cuisine: string;
+  price_range: string;
+  location: string;
+  phone: string;
+  rating: number;
+  commission_hotel: number;
+  commission_platform: number;
+}
+
+export default function RestaurantsView({ restaurants }: { restaurants: Restaurant[] }) {
+  const [search, setSearch] = useState("");
+
+  const filtered = restaurants.filter(
+    (r) =>
+      r.restaurant_name.toLowerCase().includes(search.toLowerCase()) ||
+      r.cuisine.toLowerCase().includes(search.toLowerCase()) ||
+      r.location.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search restaurants..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      {/* Table */}
+      <Card>
+        <Table headers={["Restaurant", "Cuisine", "Price", "Location", "Rating", "Commission"]}>
+          {filtered.map((r) => (
+            <tr key={r.id} className="hover:bg-muted/50 transition-colors">
+              <td className="py-3 px-4 text-sm font-medium text-foreground">{r.restaurant_name}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{r.cuisine}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{r.price_range}</td>
+              <td className="py-3 px-4 text-sm text-muted-foreground">{r.location}</td>
+              <td className="py-3 px-4 text-sm font-medium text-amber-500">⭐ {r.rating}</td>
+              <td className="py-3 px-4 text-sm font-medium text-emerald-500">€{r.commission_hotel}</td>
+            </tr>
+          ))}
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/components/layout/DashboardLayout.tsx
+============================================================
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+
+interface DashboardLayoutProps {
+  activeView: string;
+  setActiveView: (view: string) => void;
+  title: string;
+  subtitle: string;
+  stats: { totalBookings: number; completed: number; confirmed: number; pending: number; earnings: number };
+  children: React.ReactNode;
+}
+
+export default function DashboardLayout({
+  activeView,
+  setActiveView,
+  title,
+  subtitle,
+  stats,
+  children,
+}: DashboardLayoutProps) {
+  return (
+    <div className="flex h-screen bg-background">
+      <Sidebar activeView={activeView} setActiveView={setActiveView} stats={stats} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header title={title} subtitle={subtitle} stats={stats} />
+        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/components/layout/Header.tsx
+============================================================
+interface HeaderProps {
+  title: string;
+  subtitle: string;
+  stats: { totalBookings: number; confirmed: number; pending: number };
+}
+
+export default function Header({ title, subtitle, stats }: HeaderProps) {
+  return (
+    <header className="bg-card border-b border-border px-8 py-5 flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+      </div>
+      <div className="flex items-center gap-6">
+        <div className="text-right">
+          <p className="text-2xl font-bold text-foreground">{stats.totalBookings}</p>
+          <p className="text-xs text-muted-foreground">Total</p>
+        </div>
+        <div className="h-8 w-px bg-border" />
+        <div className="text-right">
+          <p className="text-2xl font-bold text-blue-600">{stats.confirmed}</p>
+          <p className="text-xs text-muted-foreground">Confirmed</p>
+        </div>
+        <div className="h-8 w-px bg-border" />
+        <div className="text-right">
+          <p className="text-2xl font-bold text-amber-500">{stats.pending}</p>
+          <p className="text-xs text-muted-foreground">Pending</p>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+
+============================================================
+FILE: src/components/layout/Sidebar.tsx
+============================================================
+import { CalendarDays, UtensilsCrossed, Wallet, LogOut } from "lucide-react";
+
+interface SidebarProps {
+  activeView: string;
+  setActiveView: (view: string) => void;
+  stats: { totalBookings: number; earnings: number };
+}
+
+const navItems = [
+  { key: "bookings", label: "Bookings", icon: CalendarDays },
+  { key: "restaurants", label: "Restaurants", icon: UtensilsCrossed },
+  { key: "earnings", label: "Earnings", icon: Wallet },
+];
+
+export default function Sidebar({ activeView, setActiveView, stats }: SidebarProps) {
+  return (
+    <aside className="w-64 bg-slate-800 text-white flex flex-col min-h-screen">
+      <div className="p-6">
+        <h1 className="text-xl font-bold">Athens Concierge</h1>
+        <p className="text-slate-400 text-sm mt-1">Hotel Dashboard</p>
+      </div>
+
+      <nav className="flex-1 px-3 space-y-1">
+        {navItems.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setActiveView(key)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              activeView === key
+                ? "bg-blue-600 text-white"
+                : "text-slate-300 hover:bg-slate-700 hover:text-white"
+            }`}
+          >
+            <Icon size={18} />
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="p-4 mx-3 mb-3 rounded-xl bg-slate-700/50">
+        <div className="flex justify-between text-sm mb-2">
+          <span className="text-slate-400">Total Bookings</span>
+          <span className="font-semibold">{stats.totalBookings}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-slate-400">Earnings</span>
+          <span className="font-semibold text-emerald-400">€{stats.earnings}</span>
+        </div>
+      </div>
+
+      <button className="flex items-center gap-3 px-6 py-4 text-sm text-slate-400 hover:text-white transition-colors border-t border-slate-700">
+        <LogOut size={18} />
+        Logout
+      </button>
+    </aside>
+  );
+}
+
+
+============================================================
+FILE: src/components/ui-custom/Badge.tsx
+============================================================
+import { cn } from "@/lib/utils";
+
+interface BadgeProps {
+  variant?: "default" | "pending" | "confirmed" | "completed";
+  children: React.ReactNode;
+  className?: string;
+}
+
+export default function Badge({ variant = "default", children, className }: BadgeProps) {
+  const base = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium";
+  const variants = {
+    default: "bg-muted text-muted-foreground",
+    pending: "bg-amber-100 text-amber-700",
+    confirmed: "bg-blue-100 text-blue-700",
+    completed: "bg-emerald-100 text-emerald-700",
+  };
+
+  return <span className={cn(base, variants[variant], className)}>{children}</span>;
+}
+
+
+============================================================
+FILE: src/components/ui-custom/Button.tsx
+============================================================
+import { cn } from "@/lib/utils";
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "danger";
+  size?: "sm" | "md";
+}
+
+export default function Button({
+  variant = "primary",
+  size = "md",
+  className,
+  children,
+  ...props
+}: ButtonProps) {
+  const base = "font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+  };
+  const variants = {
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary",
+    secondary: "bg-muted text-foreground hover:bg-muted/80 focus:ring-muted",
+    danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
+  };
+
+  return (
+    <button className={cn(base, sizes[size], variants[variant], className)} {...props}>
+      {children}
+    </button>
+  );
+}
+
+
+============================================================
+FILE: src/components/ui-custom/Card.tsx
+============================================================
+import { cn } from "@/lib/utils";
+
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export default function Card({ children, className }: CardProps) {
+  return (
+    <div className={cn("bg-card rounded-2xl border border-border shadow-sm p-6", className)}>
+      {children}
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/components/ui-custom/Table.tsx
+============================================================
+interface TableProps {
+  headers: string[];
+  children: React.ReactNode;
+}
+
+export default function Table({ headers, children }: TableProps) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-border">
+            {headers.map((h) => (
+              <th key={h} className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">{children}</tbody>
+      </table>
+    </div>
+  );
+}
+
+
+============================================================
+FILE: src/hooks/use-mobile.tsx
+============================================================
+import * as React from "react";
+
+const MOBILE_BREAKPOINT = 768;
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    mql.addEventListener("change", onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  return !!isMobile;
+}
+
+
+============================================================
+FILE: src/hooks/use-toast.ts
+============================================================
+import * as React from "react";
+
+import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+
+const TOAST_LIMIT = 1;
+const TOAST_REMOVE_DELAY = 1000000;
+
+type ToasterToast = ToastProps & {
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+};
+
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const;
+
+let count = 0;
+
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  return count.toString();
+}
+
+type ActionType = typeof actionTypes;
+
+type Action =
+  | {
+      type: ActionType["ADD_TOAST"];
+      toast: ToasterToast;
+    }
+  | {
+      type: ActionType["UPDATE_TOAST"];
+      toast: Partial<ToasterToast>;
+    }
+  | {
+      type: ActionType["DISMISS_TOAST"];
+      toastId?: ToasterToast["id"];
+    }
+  | {
+      type: ActionType["REMOVE_TOAST"];
+      toastId?: ToasterToast["id"];
+    };
+
+interface State {
+  toasts: ToasterToast[];
+}
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) {
+    return;
+  }
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId);
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId: toastId,
+    });
+  }, TOAST_REMOVE_DELAY);
+
+  toastTimeouts.set(toastId, timeout);
+};
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      };
+
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t)),
+      };
+
+    case "DISMISS_TOAST": {
+      const { toastId } = action;
+
+      // ! Side effects ! - This could be extracted into a dismissToast() action,
+      // but I'll keep it here for simplicity
+      if (toastId) {
+        addToRemoveQueue(toastId);
+      } else {
+        state.toasts.forEach((toast) => {
+          addToRemoveQueue(toast.id);
+        });
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? {
+                ...t,
+                open: false,
+              }
+            : t,
+        ),
+      };
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === undefined) {
+        return {
+          ...state,
+          toasts: [],
+        };
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      };
+  }
+};
+
+const listeners: Array<(state: State) => void> = [];
+
+let memoryState: State = { toasts: [] };
+
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action);
+  listeners.forEach((listener) => {
+    listener(memoryState);
+  });
+}
+
+type Toast = Omit<ToasterToast, "id">;
+
+function toast({ ...props }: Toast) {
+  const id = genId();
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    });
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss();
+      },
+    },
+  });
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  };
+}
+
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState);
+
+  React.useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, [state]);
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+  };
+}
+
+export { useToast, toast };
+
+
+============================================================
+FILE: src/hooks/useDashboard.ts
+============================================================
+import { useState } from "react";
+
+export function useDashboard(initialView = "bookings") {
+  const [activeView, setActiveView] = useState(initialView);
+  return { activeView, setActiveView };
+}
+
+
+============================================================
+FILE: src/hooks/useHotelData.ts
+============================================================
+const bookings = [
+  { id: "1", restaurant_name: "Taverna Plaka", booking_date: "2025-03-28", booking_time: "20:00", number_of_guests: 4, status: "confirmed" as const, commission_earned: 12, notes: "Window table requested" },
+  { id: "2", restaurant_name: "Ouzeri Thessaloniki", booking_date: "2025-03-28", booking_time: "21:00", number_of_guests: 2, status: "pending" as const, commission_earned: 8, notes: "" },
+  { id: "3", restaurant_name: "Niko's Souvlaki", booking_date: "2025-03-27", booking_time: "19:30", number_of_guests: 6, status: "completed" as const, commission_earned: 18, notes: "Birthday celebration" },
+  { id: "4", restaurant_name: "Akropolis Grill", booking_date: "2025-03-29", booking_time: "20:30", number_of_guests: 3, status: "pending" as const, commission_earned: 10, notes: "Vegetarian options needed" },
+  { id: "5", restaurant_name: "Seaside Meze", booking_date: "2025-03-26", booking_time: "21:30", number_of_guests: 8, status: "completed" as const, commission_earned: 24, notes: "Group dinner" },
+  { id: "6", restaurant_name: "To Kafeneio", booking_date: "2025-03-30", booking_time: "13:00", number_of_guests: 2, status: "confirmed" as const, commission_earned: 6, notes: "" },
+];
+
+const restaurants = [
+  { id: "1", restaurant_name: "Taverna Plaka", cuisine: "Traditional Greek", price_range: "€€", location: "Plaka", phone: "+30 210 1234567", rating: 4.7, commission_hotel: 8, commission_platform: 2 },
+  { id: "2", restaurant_name: "Ouzeri Thessaloniki", cuisine: "Seafood", price_range: "€€€", location: "Monastiraki", phone: "+30 210 2345678", rating: 4.5, commission_hotel: 10, commission_platform: 3 },
+  { id: "3", restaurant_name: "Niko's Souvlaki", cuisine: "Street Food", price_range: "€", location: "Psiri", phone: "+30 210 3456789", rating: 4.3, commission_hotel: 5, commission_platform: 2 },
+  { id: "4", restaurant_name: "Akropolis Grill", cuisine: "Mediterranean", price_range: "€€€", location: "Thissio", phone: "+30 210 4567890", rating: 4.8, commission_hotel: 12, commission_platform: 3 },
+  { id: "5", restaurant_name: "Seaside Meze", cuisine: "Seafood", price_range: "€€€€", location: "Piraeus", phone: "+30 210 5678901", rating: 4.9, commission_hotel: 15, commission_platform: 4 },
+  { id: "6", restaurant_name: "To Kafeneio", cuisine: "Café & Brunch", price_range: "€", location: "Kolonaki", phone: "+30 210 6789012", rating: 4.2, commission_hotel: 4, commission_platform: 1 },
+];
+
+export function useHotelData() {
+  const completed = bookings.filter((b) => b.status === "completed").length;
+  const confirmed = bookings.filter((b) => b.status === "confirmed").length;
+  const pending = bookings.filter((b) => b.status === "pending").length;
+  const earnings = bookings.filter((b) => b.status === "completed").reduce((sum, b) => sum + b.commission_earned, 0);
+
+  const stats = {
+    totalBookings: bookings.length,
+    completed,
+    confirmed,
+    pending,
+    earnings,
+  };
+
+  return { bookings, restaurants, stats };
+}
+
+
+============================================================
+FILE: src/lib/utils.ts
+============================================================
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+
+============================================================
+FILE: src/pages/Index.tsx
+============================================================
+import HotelDashboard from "./hotel/HotelDashboard";
+
+export default function Index() {
+  return <HotelDashboard />;
+}
+
+
+============================================================
+FILE: src/pages/NotFound.tsx
+============================================================
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+const NotFound = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+  }, [location.pathname]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted">
+      <div className="text-center">
+        <h1 className="mb-4 text-4xl font-bold">404</h1>
+        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
+        <a href="/" className="text-primary underline hover:text-primary/90">
+          Return to Home
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default NotFound;
+
+
+============================================================
+FILE: src/pages/hotel/HotelDashboard.tsx
+============================================================
+import { useDashboard } from "@/hooks/useDashboard";
+import { useHotelData } from "@/hooks/useHotelData";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import BookingsView from "@/components/hotel/BookingsView";
+import RestaurantsView from "@/components/hotel/RestaurantsView";
+import EarningsView from "@/components/hotel/EarningsView";
+
+const titles: Record<string, { title: string; subtitle: string }> = {
+  bookings: { title: "My Bookings", subtitle: "Manage all reservations" },
+  restaurants: { title: "Browse Restaurants", subtitle: "Find restaurants for guests" },
+  earnings: { title: "Earnings Overview", subtitle: "Track commission earnings" },
+};
+
+export default function HotelDashboard() {
+  const { activeView, setActiveView } = useDashboard("bookings");
+  const { bookings, restaurants, stats } = useHotelData();
+
+  const { title, subtitle } = titles[activeView] || titles.bookings;
+
+  return (
+    <DashboardLayout
+      activeView={activeView}
+      setActiveView={setActiveView}
+      title={title}
+      subtitle={subtitle}
+      stats={stats}
+    >
+      {activeView === "bookings" && <BookingsView bookings={bookings} />}
+      {activeView === "restaurants" && <RestaurantsView restaurants={restaurants} />}
+      {activeView === "earnings" && <EarningsView stats={stats} bookings={bookings} />}
+    </DashboardLayout>
+  );
+}
+
+
+============================================================
+FILE: src/test/example.test.ts
+============================================================
+import { describe, it, expect } from "vitest";
+
+describe("example", () => {
+  it("should pass", () => {
+    expect(true).toBe(true);
+  });
+});
+
+
+============================================================
+FILE: src/test/setup.ts
+============================================================
+import "@testing-library/jest-dom";
+
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => {},
+  }),
+});

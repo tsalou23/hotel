@@ -1,0 +1,107 @@
+========================================
+PROJECT CONTEXT FOR CHATGPT
+========================================
+
+Copy and paste this into ChatGPT FIRST, then ask for design help:
+
+---
+
+I'm building "Athens Concierge" - a commission-based booking platform connecting hotels with restaurants in Athens.
+
+**How it works:**
+- Hotel concierges use the platform to book restaurants for their tourists
+- Restaurants receive requests, accept/reject, and mark as completed
+- Hotels earn €3 commission per completed booking
+- Restaurants pay €4 (hotel gets €3, platform keeps €1)
+- Payments handled offline, platform only tracks data
+
+**Tech Stack:**
+- Frontend: React + Vite
+- Backend: Supabase (PostgreSQL + Auth)
+- Routing: React Router
+- Styling: Inline styles (no CSS frameworks)
+
+**Database Tables:**
+- auth.users (Supabase managed)
+- hotels (business info)
+- restaurants (name, cuisine, price, photos, menu)
+- taxis (taxi company info)
+- restaurant_bookings (hotel_id, restaurant_id, date, time, guests, status, commission_paid)
+- taxi_bookings (similar structure)
+
+**Current Status:**
+✅ Database structure complete
+✅ Authentication system working
+✅ Protected routes setup
+✅ Login page done
+✅ Basic hotel dashboard created (but needs better design)
+
+**What I need:**
+I need a professional hotel dashboard design. The dashboard has 3 views:
+
+1. **My Bookings** - Manage all restaurant reservations
+2. **Browse Restaurants** - Find and book restaurants for guests
+3. **Earnings** - Track commission earnings
+
+**Design preferences:**
+- Sidebar navigation
+- Professional blue color scheme
+- Dense/efficient layout (more info on screen)
+- Tables for data display
+- Clean, modern, trustworthy look
+- Inspired by: Stripe Dashboard + Booking.com + Airbnb Host
+
+**Technical requirements:**
+- Must be a React component named `HotelDashboard`
+- Must import: `{ useState }` from 'react', `{ supabase }` from '../../supabaseClient', `{ useNavigate }` from 'react-router-dom'
+- Must include logout function: `await supabase.auth.signOut()` then `navigate('/login')`
+- Use inline styles (styles object at bottom)
+- Fixed layout (no shifting when switching views)
+
+**Sample Data to use:**
+```javascript
+const restaurants = [
+    { id: 1, name: 'Taverna Plaka', cuisine: 'Greek', price: '€€€', rating: 4.8, location: 'Plaka', phone: '+30 210 1234567' },
+    { id: 2, name: 'Plaka Grill', cuisine: 'Greek', price: '€€', rating: 4.5, location: 'Monastiraki', phone: '+30 210 2345678' },
+    { id: 3, name: 'Italian Corner', cuisine: 'Italian', price: '€€€', rating: 4.7, location: 'Kolonaki', phone: '+30 210 3456789' },
+    { id: 4, name: 'Seafood Paradise', cuisine: 'Seafood', price: '€€€€', rating: 4.9, location: 'Piraeus', phone: '+30 210 4567890' },
+    { id: 5, name: 'Acropolis View', cuisine: 'Greek', price: '€€€', rating: 4.6, location: 'Plaka', phone: '+30 210 5678901' },
+]
+
+const bookings = [
+    { id: 1, restaurant: 'Taverna Plaka', guest: 'Smith Family', date: '2024-06-15', time: '19:30', pax: 4, status: 'pending', phone: '+1 555 0101' },
+    { id: 2, restaurant: 'Plaka Grill', guest: 'John Doe', date: '2024-06-20', time: '20:00', pax: 2, status: 'confirmed', phone: '+44 20 1234' },
+    { id: 3, restaurant: 'Italian Corner', guest: 'Anderson Group', date: '2024-06-18', time: '19:00', pax: 6, status: 'completed', phone: '+1 555 0202' },
+    { id: 4, restaurant: 'Seafood Paradise', guest: 'Maria Garcia', date: '2024-06-22', time: '21:00', pax: 3, status: 'confirmed', phone: '+34 91 123' },
+    { id: 5, restaurant: 'Acropolis View', guest: 'Chen Wei', date: '2024-06-16', time: '18:30', pax: 2, status: 'completed', phone: '+86 10 1234' },
+]
+```
+
+Do you understand the project? I'll ask you to design the dashboard next.
+
+---
+
+========================================
+AFTER CHATGPT CONFIRMS, ASK THIS:
+========================================
+
+Now design a professional hotel dashboard component for me. Give me the complete React code for `HotelDashboard.jsx` with:
+
+**3 Views:**
+1. My Bookings - Table showing all bookings with filters (All/Pending/Confirmed/Completed), status badges, and commission earned
+2. Browse Restaurants - Table/list with search and filters (cuisine, price), showing all restaurant details and "Book Now" buttons
+3. Earnings - Stat cards (Total/Pending/Rate) + breakdown table by restaurant
+
+**Requirements:**
+- Sidebar navigation with logout button
+- Show monthly earnings in sidebar (completed bookings × €3)
+- Use the sample data I provided above
+- Professional blue theme, clean design
+- Dense layout, tables preferred
+- Inline styles only
+- Fixed layout (height: 100vh, overflow: hidden)
+- Export default function HotelDashboard
+
+Give me ONLY the complete code, ready to copy-paste. No explanations.
+
+========================================

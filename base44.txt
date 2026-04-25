@@ -1,0 +1,1111 @@
+================================================================================
+ATHENS CONCIERGE — FULL PROJECT STRUCTURE & FILE CONTENTS
+================================================================================
+
+A commission-based booking platform connecting hotels with restaurants in Athens.
+
+Tech Stack: React 18, Vite, Tailwind CSS v3, React Router v6, Base44 SDK
+
+
+--------------------------------------------------------------------------------
+FILE TREE
+--------------------------------------------------------------------------------
+
+src/
+├── App.jsx
+├── index.css
+├── tailwind.config.js
+├── components/
+│   ├── hotel/
+│   │   ├── BookingsView.jsx
+│   │   ├── EarningsView.jsx
+│   │   ├── RestaurantsView.jsx
+│   │   ├── StatCard.jsx
+│   │   └── StatusBadge.jsx
+│   └── layout/
+│       ├── DashboardLayout.jsx
+│       ├── Header.jsx
+│       └── Sidebar.jsx
+├── hooks/
+│   ├── useDashboard.js
+│   └── useHotelData.js
+├── pages/
+│   └── HotelDashboard.jsx
+└── entities/
+    ├── Restaurant.json
+    └── RestaurantBooking.json
+
+
+================================================================================
+FILE: App.jsx
+================================================================================
+
+import { Toaster } from "@/components/ui/toaster"
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClientInstance } from '@/lib/query-client'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import PageNotFound from './lib/PageNotFound';
+import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import HotelDashboard from './pages/HotelDashboard';
+
+const AuthenticatedApp = () => {
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+
+  if (isLoadingPublicSettings || isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (authError) {
+    if (authError.type === 'user_not_registered') {
+      return <UserNotRegisteredError />;
+    } else if (authError.type === 'auth_required') {
+      navigateToLogin();
+      return null;
+    }
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<HotelDashboard />} />
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <QueryClientProvider client={queryClientInstance}>
+        <Router>
+          <AuthenticatedApp />
+        </Router>
+        <Toaster />
+      </QueryClientProvider>
+    </AuthProvider>
+  )
+}
+
+export default App
+
+
+================================================================================
+FILE: index.css
+================================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', sans-serif;
+
+    --background: 210 20% 98%;
+    --foreground: 215 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 12%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 215 25% 20%;
+    --muted: 210 16% 95%;
+    --muted-foreground: 215 10% 46%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 217 91% 60%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 270 70% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.75rem;
+    --sidebar-background: 215 28% 17%;
+    --sidebar-foreground: 210 16% 82%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 23%;
+    --sidebar-accent-foreground: 210 16% 93%;
+    --sidebar-border: 215 20% 25%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 215 28% 10%;
+    --foreground: 210 16% 93%;
+    --card: 215 28% 14%;
+    --card-foreground: 210 16% 93%;
+    --popover: 215 28% 14%;
+    --popover-foreground: 210 16% 93%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 25% 20%;
+    --secondary-foreground: 210 16% 93%;
+    --muted: 215 25% 18%;
+    --muted-foreground: 210 10% 55%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 20% 22%;
+    --input: 215 20% 22%;
+    --ring: 217 91% 60%;
+    --sidebar-background: 215 32% 10%;
+    --sidebar-foreground: 210 16% 82%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 16%;
+    --sidebar-accent-foreground: 210 16% 93%;
+    --sidebar-border: 215 20% 16%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
+}
+
+
+================================================================================
+FILE: tailwind.config.js
+================================================================================
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    darkMode: ["class"],
+    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        inter: ['var(--font-inter)']
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))'
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))'
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))'
+        }
+      },
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
+        }
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out'
+      }
+    }
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+
+
+================================================================================
+FILE: pages/HotelDashboard.jsx
+================================================================================
+
+import useDashboard from '../hooks/useDashboard';
+import useHotelData from '../hooks/useHotelData';
+import DashboardLayout from '../components/layout/DashboardLayout';
+import BookingsView from '../components/hotel/BookingsView';
+import RestaurantsView from '../components/hotel/RestaurantsView';
+import EarningsView from '../components/hotel/EarningsView';
+
+const titles = {
+  bookings: { title: 'My Bookings', subtitle: 'Manage all restaurant reservations for your guests' },
+  restaurants: { title: 'Browse Restaurants', subtitle: 'Find the perfect dining experience for your guests' },
+  earnings: { title: 'Earnings Overview', subtitle: 'Track your commission earnings and performance' },
+};
+
+export default function HotelDashboard() {
+  const { activeView, setActiveView } = useDashboard('bookings');
+  const { bookings, restaurants, stats } = useHotelData();
+
+  return (
+    <DashboardLayout
+      activeView={activeView}
+      setActiveView={setActiveView}
+      title={titles[activeView].title}
+      subtitle={titles[activeView].subtitle}
+      stats={stats}
+    >
+      {activeView === 'bookings' && <BookingsView bookings={bookings} />}
+      {activeView === 'restaurants' && <RestaurantsView restaurants={restaurants} />}
+      {activeView === 'earnings' && <EarningsView stats={stats} bookings={bookings} />}
+    </DashboardLayout>
+  );
+}
+
+
+================================================================================
+FILE: components/layout/DashboardLayout.jsx
+================================================================================
+
+import Sidebar from './Sidebar';
+import Header from './Header';
+
+export default function DashboardLayout({ activeView, setActiveView, title, subtitle, stats, children }) {
+  return (
+    <div className="flex h-screen w-screen overflow-hidden bg-background">
+      <Sidebar activeView={activeView} setActiveView={setActiveView} stats={stats} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Header
+          title={title}
+          subtitle={subtitle}
+          stats={stats}
+          activeView={activeView}
+          setActiveView={setActiveView}
+        />
+        <main className="flex-1 overflow-auto p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/layout/Sidebar.jsx
+================================================================================
+
+import { CalendarDays, UtensilsCrossed, Wallet, LogOut, Building2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { key: 'bookings', label: 'Bookings', icon: CalendarDays },
+  { key: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
+  { key: 'earnings', label: 'Earnings', icon: Wallet },
+];
+
+export default function Sidebar({ activeView, setActiveView, stats }) {
+  return (
+    <aside className="hidden lg:flex flex-col w-64 bg-sidebar text-sidebar-foreground flex-shrink-0">
+      {/* Logo */}
+      <div className="p-6 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-sm font-bold text-white tracking-wide">Athens</h1>
+            <p className="text-xs text-sidebar-foreground/60 font-medium">Concierge</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold px-3 mb-3">
+          Dashboard
+        </p>
+        {navItems.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setActiveView(key)}
+            className={cn(
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
+              activeView === key
+                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                : 'text-sidebar-foreground/70 hover:text-white hover:bg-sidebar-accent'
+            )}
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      {/* Quick Stats */}
+      {stats && (
+        <div className="p-4 mx-4 mb-4 rounded-xl bg-sidebar-accent/50 border border-sidebar-border">
+          <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold mb-3">
+            Quick Stats
+          </p>
+          <div className="space-y-2.5">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-sidebar-foreground/60">Bookings</span>
+              <span className="text-xs font-bold text-white">{stats.totalBookings}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-sidebar-foreground/60">Completed</span>
+              <span className="text-xs font-bold text-accent">{stats.completed}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-sidebar-foreground/60">Earnings</span>
+              <span className="text-xs font-bold text-accent">€{stats.earnings}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout */}
+      <div className="p-4 border-t border-sidebar-border">
+        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/50 hover:text-white hover:bg-sidebar-accent transition-all duration-200">
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+
+================================================================================
+FILE: components/layout/Header.jsx
+================================================================================
+
+import { Bell, Search, CalendarDays, UtensilsCrossed, Wallet, Menu } from 'lucide-react';
+
+const navItems = [
+  { key: 'bookings', label: 'Bookings', icon: CalendarDays },
+  { key: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
+  { key: 'earnings', label: 'Earnings', icon: Wallet },
+];
+
+export default function Header({ title, subtitle, stats, activeView, setActiveView }) {
+  return (
+    <header className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Mobile nav */}
+          <div className="lg:hidden flex gap-1">
+            {navItems.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setActiveView(key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  activeView === key
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden lg:block">
+            <h2 className="text-xl font-bold text-foreground tracking-tight">{title}</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {stats && (
+            <div className="hidden md:flex items-center gap-4 mr-4">
+              <StatPill label="Pending" value={stats.pending} color="bg-amber-100 text-amber-700" />
+              <StatPill label="Confirmed" value={stats.confirmed} color="bg-blue-100 text-blue-700" />
+              <StatPill label="Earnings" value={`€${stats.earnings}`} color="bg-emerald-100 text-emerald-700" />
+            </div>
+          )}
+          <button className="relative w-9 h-9 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
+            <Bell className="w-4 h-4 text-muted-foreground" />
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-card" />
+          </button>
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+            <span className="text-xs font-bold text-primary">HC</span>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function StatPill({ label, value, color }) {
+  return (
+    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${color}`}>
+      {value} {label}
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/hotel/BookingsView.jsx
+================================================================================
+
+import { useState } from 'react';
+import { CalendarDays, Clock, Users } from 'lucide-react';
+import StatusBadge from './StatusBadge';
+
+const filterTabs = ['all', 'pending', 'confirmed', 'completed'];
+
+export default function BookingsView({ bookings }) {
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  const filtered = activeFilter === 'all'
+    ? bookings
+    : bookings.filter((b) => b.status === activeFilter);
+
+  return (
+    <div className="space-y-6">
+      {/* Filter Tabs */}
+      <div className="flex gap-2">
+        {filterTabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveFilter(tab)}
+            className={`px-4 py-2 rounded-full text-xs font-semibold capitalize transition-all duration-200 ${
+              activeFilter === tab
+                ? 'bg-foreground text-background shadow-lg'
+                : 'bg-card text-muted-foreground border border-border hover:bg-muted'
+            }`}
+          >
+            {tab}
+            <span className="ml-1.5 opacity-60">
+              {tab === 'all'
+                ? bookings.length
+                : bookings.filter((b) => b.status === tab).length}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Bookings Table */}
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Restaurant</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Guest</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Date & Time</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Guests</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Status</th>
+                <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-4">Commission</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filtered.map((booking) => (
+                <tr key={booking.id} className="hover:bg-muted/50 transition-colors duration-150">
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-semibold text-foreground">{booking.restaurant_name}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-muted-foreground">{booking.guest_name}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <CalendarDays className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span>{booking.booking_date}</span>
+                      <Clock className="w-3.5 h-3.5 flex-shrink-0 ml-1" />
+                      <span>{booking.booking_time}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Users className="w-3.5 h-3.5" />
+                      {booking.number_of_guests}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <StatusBadge status={booking.status} />
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <span className="text-sm font-bold text-accent">€{booking.commission_earned}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground text-sm">
+            No bookings found for this filter.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/hotel/RestaurantsView.jsx
+================================================================================
+
+import { useState } from 'react';
+import { Search, Star, MapPin, Phone } from 'lucide-react';
+
+const cuisineFilters = ['All', 'Greek', 'Seafood', 'French', 'Japanese', 'Mediterranean', 'Modern European', 'International'];
+
+export default function RestaurantsView({ restaurants }) {
+  const [search, setSearch] = useState('');
+  const [cuisineFilter, setCuisineFilter] = useState('All');
+
+  const filtered = restaurants.filter((r) => {
+    const matchesSearch =
+      r.restaurant_name.toLowerCase().includes(search.toLowerCase()) ||
+      r.location.toLowerCase().includes(search.toLowerCase());
+    const matchesCuisine = cuisineFilter === 'All' || r.cuisine === cuisineFilter;
+    return matchesSearch && matchesCuisine;
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="relative flex-1">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search restaurants or locations..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+        />
+      </div>
+
+      {/* Cuisine Pills */}
+      <div className="flex gap-2 flex-wrap">
+        {cuisineFilters.map((cuisine) => (
+          <button
+            key={cuisine}
+            onClick={() => setCuisineFilter(cuisine)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+              cuisineFilter === cuisine
+                ? 'bg-foreground text-background shadow-lg'
+                : 'bg-card text-muted-foreground border border-border hover:bg-muted'
+            }`}
+          >
+            {cuisine}
+          </button>
+        ))}
+      </div>
+
+      {/* Restaurant Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {filtered.map((restaurant) => (
+          <div
+            key={restaurant.id}
+            className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 group"
+          >
+            <div className="h-40 overflow-hidden">
+              <img
+                src={restaurant.image_url}
+                alt={restaurant.restaurant_name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="font-bold text-foreground text-sm">{restaurant.restaurant_name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{restaurant.cuisine} · {restaurant.price_range}</p>
+                </div>
+                <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-full">
+                  <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  <span className="text-xs font-bold text-amber-700">{restaurant.rating}</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{restaurant.description}</p>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {restaurant.location}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Phone className="w-3 h-3" />
+                  {restaurant.phone}
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border">
+                <div className="text-xs">
+                  <span className="text-muted-foreground">Commission: </span>
+                  <span className="font-bold text-accent">{restaurant.commission_hotel}%</span>
+                </div>
+                <button className="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors">
+                  Book Now
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-16 text-muted-foreground text-sm">
+          No restaurants match your search.
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/hotel/EarningsView.jsx
+================================================================================
+
+import { Wallet, TrendingUp, CheckCircle, CalendarDays } from 'lucide-react';
+import StatCard from './StatCard';
+import StatusBadge from './StatusBadge';
+
+export default function EarningsView({ stats, bookings }) {
+  const completedBookings = bookings.filter((b) => b.status === 'completed');
+  const avgCommission = completedBookings.length
+    ? Math.round(stats.earnings / completedBookings.length)
+    : 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={Wallet} label="Total Earnings" value={`€${stats.earnings}`} accent />
+        <StatCard icon={CheckCircle} label="Completed" value={stats.completed} />
+        <StatCard icon={TrendingUp} label="Avg. Commission" value={`€${avgCommission}`} accent />
+        <StatCard icon={CalendarDays} label="Total Bookings" value={stats.totalBookings} />
+      </div>
+
+      {/* Completed Bookings Table */}
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h3 className="text-sm font-bold text-foreground">Completed Bookings</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Bookings that have earned commission</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">Restaurant</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">Guest</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">Date</th>
+                <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">Status</th>
+                <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">Earned</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {completedBookings.map((booking) => (
+                <tr key={booking.id} className="hover:bg-muted/50 transition-colors duration-150">
+                  <td className="px-6 py-3.5 text-sm font-semibold text-foreground">{booking.restaurant_name}</td>
+                  <td className="px-6 py-3.5 text-sm text-muted-foreground">{booking.guest_name}</td>
+                  <td className="px-6 py-3.5 text-sm text-muted-foreground">{booking.booking_date}</td>
+                  <td className="px-6 py-3.5"><StatusBadge status={booking.status} /></td>
+                  <td className="px-6 py-3.5 text-right text-sm font-bold text-accent">€{booking.commission_earned}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {completedBookings.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground text-sm">
+            No completed bookings yet.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/hotel/StatCard.jsx
+================================================================================
+
+export default function StatCard({ icon: Icon, label, value, accent = false }) {
+  return (
+    <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${accent ? 'bg-accent/10' : 'bg-primary/10'}`}>
+          <Icon className={`w-4 h-4 ${accent ? 'text-accent' : 'text-primary'}`} />
+        </div>
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
+      </div>
+      <p className={`text-2xl font-bold tracking-tight ${accent ? 'text-accent' : 'text-foreground'}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+
+================================================================================
+FILE: components/hotel/StatusBadge.jsx
+================================================================================
+
+import { cn } from '@/lib/utils';
+
+const variants = {
+  pending: 'bg-amber-50 text-amber-700 border-amber-200',
+  confirmed: 'bg-blue-50 text-blue-700 border-blue-200',
+  completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  cancelled: 'bg-red-50 text-red-700 border-red-200',
+};
+
+export default function StatusBadge({ status }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border capitalize',
+        variants[status] || 'bg-muted text-muted-foreground border-border'
+      )}
+    >
+      {status}
+    </span>
+  );
+}
+
+
+================================================================================
+FILE: hooks/useDashboard.js
+================================================================================
+
+import { useState } from 'react';
+
+export default function useDashboard(initialView = 'bookings') {
+  const [activeView, setActiveView] = useState(initialView);
+  return { activeView, setActiveView };
+}
+
+
+================================================================================
+FILE: hooks/useHotelData.js
+================================================================================
+
+import { useMemo } from 'react';
+
+const mockBookings = [
+  {
+    id: '1',
+    restaurant_name: 'Varoulko Seaside',
+    guest_name: 'Mr. Johnson',
+    booking_date: '2026-03-28',
+    booking_time: '20:30',
+    number_of_guests: 4,
+    status: 'confirmed',
+    commission_earned: 28,
+    notes: 'Window table requested',
+  },
+  {
+    id: '2',
+    restaurant_name: 'Spondi',
+    guest_name: 'Ms. Chen',
+    booking_date: '2026-03-27',
+    booking_time: '21:00',
+    number_of_guests: 2,
+    status: 'completed',
+    commission_earned: 45,
+    notes: 'Anniversary dinner',
+  },
+  {
+    id: '3',
+    restaurant_name: 'Funky Gourmet',
+    guest_name: 'Mr. & Mrs. Williams',
+    booking_date: '2026-03-29',
+    booking_time: '19:30',
+    number_of_guests: 6,
+    status: 'pending',
+    commission_earned: 36,
+    notes: 'Vegetarian options needed',
+  },
+  {
+    id: '4',
+    restaurant_name: 'Hytra',
+    guest_name: 'Dr. Müller',
+    booking_date: '2026-03-30',
+    booking_time: '20:00',
+    number_of_guests: 3,
+    status: 'confirmed',
+    commission_earned: 32,
+    notes: '',
+  },
+  {
+    id: '5',
+    restaurant_name: 'Aleria',
+    guest_name: 'Mme. Dupont',
+    booking_date: '2026-03-26',
+    booking_time: '21:30',
+    number_of_guests: 2,
+    status: 'completed',
+    commission_earned: 38,
+    notes: 'Gluten-free menu',
+  },
+  {
+    id: '6',
+    restaurant_name: 'CTC Restaurant',
+    guest_name: 'Mr. Tanaka',
+    booking_date: '2026-03-31',
+    booking_time: '19:00',
+    number_of_guests: 5,
+    status: 'pending',
+    commission_earned: 25,
+    notes: 'Business dinner',
+  },
+  {
+    id: '7',
+    restaurant_name: 'Nolan',
+    guest_name: 'Mrs. Rossi',
+    booking_date: '2026-03-25',
+    booking_time: '20:30',
+    number_of_guests: 2,
+    status: 'completed',
+    commission_earned: 52,
+    notes: '',
+  },
+];
+
+const mockRestaurants = [
+  {
+    id: 'r1',
+    restaurant_name: 'Varoulko Seaside',
+    cuisine: 'Seafood',
+    price_range: '€€€',
+    location: 'Piraeus Marina',
+    phone: '+30 210 522 8400',
+    rating: 4.7,
+    commission_hotel: 12,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400',
+    description: 'Michelin-starred seafood restaurant on the waterfront.',
+  },
+  {
+    id: 'r2',
+    restaurant_name: 'Spondi',
+    cuisine: 'French',
+    price_range: '€€€€',
+    location: 'Pangrati',
+    phone: '+30 210 756 4021',
+    rating: 4.9,
+    commission_hotel: 15,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=400',
+    description: 'Two Michelin star fine dining in a neoclassical setting.',
+  },
+  {
+    id: 'r3',
+    restaurant_name: 'Funky Gourmet',
+    cuisine: 'Modern European',
+    price_range: '€€€€',
+    location: 'Keramikos',
+    phone: '+30 210 524 2727',
+    rating: 4.6,
+    commission_hotel: 10,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400',
+    description: 'Molecular gastronomy meets Greek flavors.',
+  },
+  {
+    id: 'r4',
+    restaurant_name: 'Hytra',
+    cuisine: 'Greek',
+    price_range: '€€€',
+    location: 'Syntagma',
+    phone: '+30 210 331 6767',
+    rating: 4.5,
+    commission_hotel: 12,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',
+    description: 'Modern Greek cuisine with Acropolis views.',
+  },
+  {
+    id: 'r5',
+    restaurant_name: 'Aleria',
+    cuisine: 'Mediterranean',
+    price_range: '€€€',
+    location: 'Metaxourghio',
+    phone: '+30 210 522 2633',
+    rating: 4.8,
+    commission_hotel: 14,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=400',
+    description: 'Seasonal Mediterranean in a stunning neoclassical mansion.',
+  },
+  {
+    id: 'r6',
+    restaurant_name: 'CTC Restaurant',
+    cuisine: 'International',
+    price_range: '€€',
+    location: 'Kolonaki',
+    phone: '+30 210 723 0107',
+    rating: 4.3,
+    commission_hotel: 8,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=400',
+    description: 'Casual fine dining with creative international dishes.',
+  },
+  {
+    id: 'r7',
+    restaurant_name: 'Nolan',
+    cuisine: 'Japanese',
+    price_range: '€€€€',
+    location: 'Syntagma',
+    phone: '+30 210 324 3545',
+    rating: 4.9,
+    commission_hotel: 15,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=400',
+    description: 'Greek-Japanese fusion from a Michelin-starred chef.',
+  },
+  {
+    id: 'r8',
+    restaurant_name: 'Ta Karamanlidika',
+    cuisine: 'Greek',
+    price_range: '€€',
+    location: 'Psyrri',
+    phone: '+30 210 325 4184',
+    rating: 4.4,
+    commission_hotel: 8,
+    commission_platform: 5,
+    image_url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400',
+    description: 'Traditional Greek deli-restaurant in the heart of Athens.',
+  },
+];
+
+export default function useHotelData() {
+  const stats = useMemo(() => {
+    const completed = mockBookings.filter((b) => b.status === 'completed');
+    const confirmed = mockBookings.filter((b) => b.status === 'confirmed');
+    const pending = mockBookings.filter((b) => b.status === 'pending');
+    const earnings = completed.reduce((sum, b) => sum + b.commission_earned, 0);
+
+    return {
+      totalBookings: mockBookings.length,
+      completed: completed.length,
+      confirmed: confirmed.length,
+      pending: pending.length,
+      earnings,
+    };
+  }, []);
+
+  return {
+    bookings: mockBookings,
+    restaurants: mockRestaurants,
+    stats,
+  };
+}
+
+
+================================================================================
+FILE: entities/Restaurant.json
+================================================================================
+
+{
+  "name": "Restaurant",
+  "type": "object",
+  "properties": {
+    "restaurant_name": { "type": "string", "title": "Restaurant Name" },
+    "cuisine": {
+      "type": "string",
+      "title": "Cuisine",
+      "enum": ["Greek", "Mediterranean", "Italian", "Seafood", "International", "French", "Japanese", "Modern European"]
+    },
+    "price_range": {
+      "type": "string",
+      "title": "Price Range",
+      "enum": ["€", "€€", "€€€", "€€€€"]
+    },
+    "location": { "type": "string", "title": "Location" },
+    "phone": { "type": "string", "title": "Phone" },
+    "rating": { "type": "number", "title": "Rating", "minimum": 0, "maximum": 5 },
+    "commission_hotel": { "type": "number", "title": "Hotel Commission %" },
+    "commission_platform": { "type": "number", "title": "Platform Commission %" },
+    "image_url": { "type": "string", "title": "Image URL" },
+    "description": { "type": "string", "title": "Description" }
+  },
+  "required": ["restaurant_name", "cuisine", "location"]
+}
+
+
+================================================================================
+FILE: entities/RestaurantBooking.json
+================================================================================
+
+{
+  "name": "RestaurantBooking",
+  "type": "object",
+  "properties": {
+    "restaurant_id": { "type": "string", "title": "Restaurant ID" },
+    "restaurant_name": { "type": "string", "title": "Restaurant Name" },
+    "guest_name": { "type": "string", "title": "Guest Name" },
+    "booking_date": { "type": "string", "title": "Booking Date", "format": "date" },
+    "booking_time": { "type": "string", "title": "Booking Time" },
+    "number_of_guests": { "type": "number", "title": "Number of Guests" },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "enum": ["pending", "confirmed", "completed", "cancelled"]
+    },
+    "commission_earned": { "type": "number", "title": "Commission Earned (€)" },
+    "notes": { "type": "string", "title": "Notes" }
+  },
+  "required": ["restaurant_id", "restaurant_name", "guest_name", "booking_date", "number_of_guests", "status"]
+}
+
+
+================================================================================
+END OF FILE
+================================================================================
