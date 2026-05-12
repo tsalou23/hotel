@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../../supabaseClient'
 import { X } from 'lucide-react'
 
-export default function BookingModal({ restaurant, onClose,onSucces}) {
+export default function BookingModal({ restaurant, onClose, onSuccess, hotelId }) {
     const [guest, setGuest] = useState('')
     const [phone, setPhone] = useState('')
     const [date, setDate] = useState('')
@@ -20,7 +20,7 @@ export default function BookingModal({ restaurant, onClose,onSucces}) {
         const { error } = await supabase
             .from('restaurant_bookings')
             .insert({
-                hotel_id: 'e09aabc8-a2b1-4e6a-ade4-aeb006d60485',
+                hotel_id: hotelId,
                 restaurant_id: restaurant.id,
                 guest,
                 phone,
@@ -39,7 +39,7 @@ export default function BookingModal({ restaurant, onClose,onSucces}) {
         }
 
         setLoading(false)
-        onSucces()
+        onSuccess()
     }
 
     return (

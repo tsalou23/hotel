@@ -6,7 +6,7 @@ import BookingModal from './BookingModal'
 // Shows all restaurants in a searchable, filterable table
 // Props: restaurants (array) — comes from useHotelData.js
 // When connecting Supabase: only useHotelData.js changes, this file stays the same
-export default function RestaurantsView({ restaurants ,onBookingCreated}) {
+export default function RestaurantsView({ restaurants, onBookingCreated, hotelId }) {
 
     // ─── FILTER STATE ─────────────────────────────────────────────────────────
     // search — filters by restaurant name or location
@@ -163,8 +163,9 @@ export default function RestaurantsView({ restaurants ,onBookingCreated}) {
             {selectedRestaurant &&(
                 <BookingModal
                 restaurant={selectedRestaurant}
+                hotelId={hotelId}
                 onClose={()=>setSelectedRestaurant(null)}
-                onSucces={()=>{
+                onSuccess={()=>{
                     setSelectedRestaurant(null)
                     onBookingCreated()
                 }}

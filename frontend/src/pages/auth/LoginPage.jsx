@@ -15,35 +15,35 @@ function LoginPage() {
         setLoading(true)
         setError(null)
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
         if (error) {
             setError(error.message)
             setLoading(false)
-        } else {
-            navigate('/hotel')
+            return
         }
-    }
+        const userId=data.user.id
+        const {data:hotel}=await supabase.from('hotels').select('id').eq('user_id',userId).single()
+        if (hotel){navigate('/hotel');return}
+        const {data:restaurant}=await supabase.from('restaurants').select('id').eq('user_id',userId).single()
+        if (restaurant){navigate('/restaurant');return}
+        navigate('/admin')
+
+        }
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                {/* Logo */}
                 <div className="flex flex-col items-center mb-8">
                     <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/25">
                         <Landmark className="w-7 h-7 text-primary-foreground" />
                     </div>
                     <h1 className="text-2xl font-bold text-foreground tracking-tight">Athens Concierge</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Sign in to your hotel portal</p>
+                    <p className="text-sm text-muted-foreground mt-1">Sign in to your portal</p>
                 </div>
 
-                {/* Card */}
                 <div className="bg-card rounded-2xl border border-border shadow-sm p-8">
                     <form onSubmit={handleLogin} className="space-y-5">
-                        {/* Email */}
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-foreground">Email</label>
                             <div className="relative">
@@ -59,7 +59,6 @@ function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Password */}
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-foreground">Password</label>
                             <div className="relative">
@@ -75,7 +74,6 @@ function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Error */}
                         {error && (
                             <div className="flex items-center gap-2.5 px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-xl">
                                 <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
@@ -83,7 +81,6 @@ function LoginPage() {
                             </div>
                         )}
 
-                        {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading}
