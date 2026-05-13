@@ -29,7 +29,8 @@ export default function BookingModal({ restaurant, onClose, onSuccess, hotelId }
                 number_of_guests: guests,
                 notes,
                 status: 'pending',
-                commission_earned: restaurant.commission_hotel
+                commission_earned: restaurant.commission_hotel,
+                commission_platform_earned: restaurant.commission_platform
             })
 
         if (error) {

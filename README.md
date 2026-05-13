@@ -350,6 +350,29 @@ After login, check which table the user belongs to:
 - Restaurants can only see their own bookings
 - Admin can see everything
 
+### IDEAS / TO-DO
+
+#### Per Hotel-Restaurant Commission Agreements:
+Currently commission rates are set per restaurant and apply to ALL hotels equally.
+A more advanced model would have a `hotel_restaurant_agreements` table:
+```
+hotel_restaurant_agreements
+├── hotel_id
+├── restaurant_id
+├── commission_hotel    ← negotiated rate for THIS hotel only
+└── commission_platform ← platform cut for THIS pair
+```
+This would allow:
+- Different commission rates per hotel-restaurant pair
+- Some restaurants to be hidden from certain hotels (no agreement = not visible)
+- Restaurants that are too far from certain hotels to be excluded
+
+#### Restaurant Availability per Hotel:
+- Not all restaurants should be visible to all hotels
+- A restaurant in Piraeus might not be relevant for a hotel in Kolonaki
+- The `hotel_restaurant_agreements` table above would solve this
+- Only restaurants with an agreement record would show in that hotel's list
+
 ---
 
 ## 11. DEVELOPER NOTES

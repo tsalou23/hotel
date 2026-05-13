@@ -1,6 +1,10 @@
+import { useState } from 'react'
 import { MapPin, Star } from 'lucide-react'
+import EditCommissionModal from './EditCommissionModal'
 
-export default function AdminRestaurantsView({ restaurants }) {
+export default function AdminRestaurantsView({ restaurants, onRefresh }) {
+    const [selectedRestaurant, setSelectedRestaurant] = useState(null)
+
     return (
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-border">
@@ -10,7 +14,7 @@ export default function AdminRestaurantsView({ restaurants }) {
             <table className="w-full">
                 <thead>
                     <tr className="border-b border-border">
-                        {['Restaurant', 'Cuisine', 'Location', 'Price', 'Rating', 'Commission Hotel', 'Commission Platform'].map(h => (
+                        {['Restaurant', 'Cuisine', 'Location', 'Price', 'Rating', 'Commission Hotel', 'Commission Platform', ''].map(h => (
                             <th key={h} className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-6 py-3">{h}</th>
                         ))}
                     </tr>
@@ -37,12 +41,31 @@ export default function AdminRestaurantsView({ restaurants }) {
                             </td>
                             <td className="px-6 py-4 text-sm font-bold text-accent">€{r.commission_hotel}</td>
                             <td className="px-6 py-4 text-sm font-bold text-primary">€{r.commission_platform}</td>
+                            <td className="px-6 py-4">
+                                <button
+                                    onClick={() => setSelectedRestaurant(r)}
+                                    className="px-3 py-1.5 bg-secondary text-secondary-foreground text-xs font-semibold rounded-lg hover:bg-secondary/80 transition-colors cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             {restaurants.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground text-sm">No restaurants yet.</div>
+            )}
+
+            {selectedRestaurant && (
+                <EditCommissionModal
+                    restaurant={selectedRestaurant}
+                    onClose={() => setSelectedRestaurant(null)}
+                    onSuccess={() => {
+                        setSelectedRestaurant(null)
+                        onRefresh()
+                    }}
+                />
             )}
         </div>
     )

@@ -40,16 +40,22 @@ export function useAdminData() {
     const completed = bookings.filter(b => b.status === 'completed').length
     const confirmed = bookings.filter(b => b.status === 'confirmed').length
     const pending = bookings.filter(b => b.status === 'pending').length
-    const earnings = bookings
+    const hotelEarnings = bookings
         .filter(b => b.status === 'completed')
         .reduce((total, b) => total + b.commission_earned, 0)
+    const platformEarnings = bookings
+        .filter(b => b.status === 'completed')
+        .reduce((total, b) => total + (b.commission_platform_earned || 0), 0)
+    const totalRevenue = hotelEarnings + platformEarnings
 
     const stats = {
         totalBookings: bookings.length,
         completed,
         confirmed,
         pending,
-        earnings,
+        earnings: hotelEarnings,
+        platformEarnings,
+        totalRevenue,
         totalRestaurants: restaurants.length,
         totalHotels: hotels.length,
     }
